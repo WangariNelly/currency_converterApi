@@ -1,7 +1,8 @@
 package com.rate_service.rateService.Interfaces;
 
-import com.rate_service.rateService.Dtos.RateResponseDto;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import reactor.core.publisher.Mono;
 
 public interface RateService {
-    RateResponseDto getExchangeRate(String from, String to);
+   Mono<ObjectNode> getExchangeRate(String from, String to);
 }
