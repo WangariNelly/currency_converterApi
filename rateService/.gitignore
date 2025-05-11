@@ -33,7 +33,6 @@ build/
 .vscode/
 
 .env
-src/main/resources/application-local.properties
      docker-compose.yml
 src/main/resources/application-test.properties
 src/main/resources/application-prod.properties

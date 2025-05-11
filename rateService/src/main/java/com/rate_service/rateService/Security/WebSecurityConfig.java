@@ -3,6 +3,7 @@ package com.rate_service.rateService.Security;
 import com.rate_service.rateService.Filters.ApiKeyFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -27,7 +28,7 @@ public class WebSecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/rest/**","/api/v1/rate/status","/api/v1/status","/actuator/health").permitAll()
+                        .requestMatchers("/api/v1/rate/status","/api/v1/status","/actuator/health").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -36,4 +37,5 @@ public class WebSecurityConfig {
 //                 .headers(headers -> headers.contentSecurityPolicy("default-src 'self'").and().frameOptions().sameOrigin());
         return http.build();
     }
+
 }

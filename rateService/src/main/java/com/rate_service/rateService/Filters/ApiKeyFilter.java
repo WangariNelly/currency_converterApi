@@ -20,12 +20,14 @@ import java.io.IOException;
 public class ApiKeyFilter extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(ApiKeyFilter.class);
 
-    @Value("${security.api.key}") private String key;
-    @Value("${security.api.secret}") private String secret;
+    @Value("${security.api.key}")
+    private String key;
+
+    @Value("${security.api.secret}")
+    private String secret;
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws ServletException, IOException {
-
 
         logger.info("Request - method: {}, URI: {}, IP: {}",
                 req.getMethod(), req.getRequestURI(), req.getRemoteAddr());
@@ -33,6 +35,20 @@ public class ApiKeyFilter extends OncePerRequestFilter {
         String apiSecret = req.getHeader("x-api-secret");
 
         logger.info("API Key: {}", apiKey);
+        logger.info("Expected key: {}, Provided key: {}", key, apiKey);
+        logger.info("Expected secret: {}, Provided secret: {}", secret, apiSecret);
+        if (apiKey == null || apiSecret == null) {
+            logger.warn("Missing API Key or Secret from IP: {}", req.getRemoteAddr());
+            throw new AuthenticationCredentialsNotFoundException("Missing API credentials");
+        }
+        if (key == null || secret == null) {
+            logger.warn("API Key or Secret not configured");
+            throw new AuthenticationCredentialsNotFoundException("API credentials not configured");
+        }
+        if (key.isEmpty() || secret.isEmpty()) {
+            logger.warn("API Key or Secret is empty");
+            throw new AuthenticationCredentialsNotFoundException("API credentials are empty");
+        }
 
         if (!isValidApiKey(apiKey, apiSecret)) {
             logger.warn("Invalid API Key attempt from IP: {}", req.getRemoteAddr());

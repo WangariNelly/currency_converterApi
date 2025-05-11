@@ -20,8 +20,8 @@ import java.io.IOException;
 public class ApiKeyFilter extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(ApiKeyFilter.class);
 
-    @Value("${security.api.key}") private String key;
-    @Value("${security.api.secret}") private String secret;
+    @Value("${app.api.key}") private String validApiKey;
+    @Value("${app.api.secret}") private String validApiSecret;
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws ServletException, IOException {
@@ -29,8 +29,8 @@ public class ApiKeyFilter extends OncePerRequestFilter {
 
         logger.info("Request - method: {}, URI: {}, IP: {}",
                 req.getMethod(), req.getRequestURI(), req.getRemoteAddr());
-        String apiKey = req.getHeader("x-api-key");
-        String apiSecret = req.getHeader("x-api-secret");
+        String apiKey = req.getHeader("X-API-KEY");
+        String apiSecret = req.getHeader("X-API-SECRET");
 
         logger.info("API Key: {}", apiKey);
 
@@ -43,6 +43,22 @@ public class ApiKeyFilter extends OncePerRequestFilter {
     }
 
     private boolean isValidApiKey(String apiKey, String apiSecret) {
-        return key.equals(apiKey) && secret.equals(apiSecret);
+        return validApiKey.equals(apiKey) && validApiSecret.equals(apiSecret);
+    }
+
+    public String getValidApiSecret() {
+        return validApiSecret;
+    }
+
+    public void setValidApiSecret(String validApiSecret) {
+        this.validApiSecret = validApiSecret;
+    }
+
+    public String getValidApiKey() {
+        return validApiKey;
+    }
+
+    public void setValidApiKey(String validApiKey) {
+        this.validApiKey = validApiKey;
     }
 }

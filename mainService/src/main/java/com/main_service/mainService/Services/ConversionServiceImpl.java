@@ -25,15 +25,27 @@ public class ConversionServiceImpl implements ConversionService {
     @Autowired
     private WebClient.Builder webClientBuilder;
 
+    @Value("${rate.service.api.key}")
+    private String rateServiceApiKey;
+
+    @Value("${rate.service.api.secret}")
+    private String rateServiceApiSecret;
+
+    @Value("${rate-service.url}")
+    private String rateServiceUrl;
+
     @Override
     public ConversionResponseDTO convertCurrency(ConversionRequestDTO dto) {
-        String url = "/?from=" + dto.getFrom() + "&to=" + dto.getTo();
+//        String url = "/?from=" + dto.getFrom() + "&to=" + dto.getTo();
 
         try {
             var rateResponse = webClientBuilder.build().get()
-                    .uri("http://rate-service:8081/api/v1/rate" + url)
-                    .header("X-API-KEY", "rate-key")
-                    .header("X-API-SECRET", "rate-secret")
+//                    .uri("http://rate-service:8081/api/v1/rate/exchange" + url)
+//                    .uri("http://localhost:8081" + url)
+//                    .uri("http://rate-service:8081/api/v1/rate/exchange?from={from}&to={to}", from, to)
+                    .uri(rateServiceUrl + "/exchange?from={from}&to={to}", dto.getFrom(), dto.getTo())
+                    .header("X-API-KEY", rateServiceApiKey)
+                    .header("X-API-SECRET", "rateServiceApiSecret")
                     .retrieve()
                     .onStatus(code -> !code.is2xxSuccessful(), response ->
                             Mono.error(new RuntimeException("Rate service failed: " + response.statusCode()))

@@ -2,7 +2,6 @@ package com.rate_service.rateService.Controllers;
 
 import com.rate_service.rateService.Dtos.RateResponseDto;
 import com.rate_service.rateService.Interfaces.RateService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,17 +21,18 @@ public class RateController {
     this.rateService = rateService;
   }
 
-  @GetMapping
+  @GetMapping("/exchange")
   public ResponseEntity<RateResponseDto> gtExchangeRate(
           @RequestParam String from,
           @RequestParam String to) {
     try {
+      System.out.println("Fetching exchange rate from " + from + " to " + to);
       return ResponseEntity.ok(rateService.getExchangeRate(from, to));
     } catch (Exception e) {
+      e.printStackTrace();
      return ResponseEntity.badRequest().body(new RateResponseDto(from, to, 0));
     }
   }
-
 
   @GetMapping("/status")
     public ResponseEntity<Map<String, String >> status() {
