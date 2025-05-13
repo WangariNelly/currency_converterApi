@@ -1,13 +1,8 @@
 package com.main_service.mainService.Services;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.main_service.mainService.Dtos.ConversionRequestDTO;
-import com.main_service.mainService.Dtos.ConversionResponseDTO;
-import com.main_service.mainService.Dtos.RateResponseDTO;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.main_service.mainService.Interfaces.ConversionService;
-import com.main_service.mainService.Models.Conversion;
 import com.main_service.mainService.Repos.ConversionRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -19,11 +14,11 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
 public class ConversionServiceImpl implements ConversionService {
+
     @Autowired
     private ConversionRepository conversionRepository;
 
@@ -33,56 +28,116 @@ public class ConversionServiceImpl implements ConversionService {
     @Value("${rate.service.api.key}")
     private String rateServiceApiKey;
 
-
     @Value("${rate-service.url}")
     private String rateServiceUrl;
 
     private static final Logger logger = LoggerFactory.getLogger(ConversionServiceImpl.class);
 
     @Override
-    public JsonNode convertCurrency(String from, String to, double amount) {
+    public Mono<JsonNode> convertCurrency(String from, String to, double amount) {
+
         if (from == null || to == null || amount <= 0) {
             throw new IllegalArgumentException("Invalid input parameters");
         }
 
         String normalizedFrom = from.toUpperCase();
         String normalizedTo = to.toUpperCase();
+        logger.debug("Fetching exchange rate from {} to {}", normalizedFrom, normalizedTo);
 
-        try {
-            JsonNode json = webClientBuilder.build().get()
+        return webClientBuilder.build().get()
+                .uri(rateServiceUrl + "/convert?from={from}&to={to}", normalizedFrom, normalizedTo)
+                .header("X-API-KEY", rateServiceApiKey)
+                .retrieve()
+                .onStatus(code -> !code.is2xxSuccessful(), response ->
+                        Mono.error(new RuntimeException("Rate service failed: " + response.statusCode()))
+                )
+                .bodyToMono(JsonNode.class)
+                .map(json -> {
+                    logger.debug("Received response: {}", json);
 
-                    .uri(rateServiceUrl + "/convert?from={from}&to={to}", normalizedFrom, normalizedTo)
-                    .header("X-API-KEY", rateServiceApiKey)
-                    .retrieve()
-                    .onStatus(code -> !code.is2xxSuccessful(), response ->
-                            Mono.error(new RuntimeException("Rate service failed: " + response.statusCode()))
-                    )
-                    .bodyToMono(JsonNode.class)
-                    .block();
+                    if ("error".equals(json.path("result").asText())) {
+                        throw new RuntimeException(json.path("error-type").asText("API request failed"));
+                    }
 
-            if (json == null || !json.has("rate")) {
-                throw new RuntimeException("Invalid response from rate service");
-            }
+                    if (json == null || !json.has("conversion_rate")) {
+                        throw new RuntimeException("Missing conversion_rate in response");
+                    }
 
-            double rate = json.get("conversion_rates").get(normalizedTo).asDouble();
-            String lastUpdated = json.path("time_last_update_utc").asText();
-            double convertedAmount = rate * amount;
 
-            logger.info("Exchange rate from {} to {}: {}", normalizedFrom, normalizedTo, rate);
+//                    BigDecimal rate = new BigDecimal(json.get("conversion_rates").get(normalizedTo).asText());
+//                    BigDecimal amountBD = BigDecimal.valueOf(amount);
+//                    BigDecimal convertedAmount = rate.multiply(amountBD);
+//                    String lastUpdated = json.path("time_last_update_utc").asText();
 
-            ObjectNode response = JsonNodeFactory.instance.objectNode();
-            response.put("base", normalizedFrom);
-            response.put("target", normalizedTo);
-            response.put("rate", rate);
-            response.put("last_updated", lastUpdated);
-            response.put("amount", amount);
-            response.put("converted_amount", convertedAmount);
-            response.set("full_response", json);
+                    BigDecimal rate ;
+                    // Try both possible formats
+                    if (json.has("conversion_rates") && json.get("conversion_rates").has(normalizedTo)) {
+                        rate = new BigDecimal(json.get("conversion_rates").get(normalizedTo).asText());
+                    } else if (json.has("conversion_rate")) {
+                        rate = new BigDecimal(json.get("conversion_rate").asText());
+                    } else {
+                        throw new RuntimeException("Missing conversion_rate in response");
+                    }
 
-            return response;
+                    BigDecimal convertedAmount = rate.multiply(BigDecimal.valueOf(amount));
+                    String lastUpdated = json.path("time_last_update_utc").asText();
 
-        } catch (Exception e) {
-            throw new RuntimeException("Currency Conversion failed: " + e.getMessage());
-        }
+                    logger.info("Exchange rate from {} to {}: {}", normalizedFrom, normalizedTo, rate);
+
+//                    String jsonString = String.format(
+//                            "{" +
+//                                    "\"base\":\"%s\"," +
+//                                    "\"target\":\"%s\"," +
+//                                    "\"rate\":%f," +
+//                                    "\"last_updated\":\"%s\"," +
+//                                    "\"full_response\":%s" +
+//                                    "}",
+//                            normalizedFrom,
+//                            normalizedTo,
+//                            rate,
+//                            lastUpdated,
+//                            json.toString()
+//                    );
+                    String jsonString = String.format(
+                            "{" +
+                                    "\"base\":\"%s\"," +
+                                    "\"target\":\"%s\"," +
+                                    "\"rate\":%.4f," +
+                                    "\"last_updated\":\"%s\"," +
+                                    "\"full_response\":%s" +
+                                    "}",
+                            normalizedFrom,
+                            normalizedTo,
+                            rate,
+                            lastUpdated,
+                            json.toString()
+                    );
+                    logger.debug("Constructed JSON: {}", jsonString);
+
+                    try {
+                        return new ObjectMapper().readTree(jsonString);
+                    } catch (Exception e) {
+                        throw new RuntimeException("Failed to parse constructed JSON: " + e.getMessage());
+                    }
+                })
+                .onErrorResume(e -> {
+                    logger.error("Failed to fetch exchange rate", e);
+
+                    String fallbackJson = String.format(
+                            "{" +
+                                    "\"error\":\"%s\"," +
+                                    "\"from\":\"%s\"," +
+                                    "\"to\":\"%s\"," +
+                                    "\"rate\":0.0," +
+                                    "\"last_updated\":\"\"" +
+                                    "}", e.getMessage(), normalizedFrom, normalizedTo);
+
+                    try {
+                        return Mono.just(new ObjectMapper().readTree(fallbackJson));
+                    } catch (Exception ex) {
+                        logger.error("Failed to create fallback JSON", ex);
+                        return Mono.error(new RuntimeException("Failed to create fallback error JSON"));
+                    }
+                });
     }
 }
