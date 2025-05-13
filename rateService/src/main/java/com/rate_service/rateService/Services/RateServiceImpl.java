@@ -36,11 +36,10 @@ public class RateServiceImpl implements RateService {
         logger.info("Initialized RateService with API key: {}", apiKey.substring(0, 4) + "****");
     }
 
-    public Mono<ObjectNode> getExchangeRate(String from, String to) {
+    public Mono<JsonNode> getExchangeRate(String from, String to) {
         String normalizedFrom = from.toUpperCase();
         String normalizedTo = to.toUpperCase();
 
-        System.out.println("DEBUG - Making API call for " + normalizedFrom + " to " + normalizedTo);
         logger.debug("Fetching exchange rate from {} to {}", normalizedFrom, normalizedTo);
 
         return webClient.get()
@@ -63,7 +62,7 @@ public class RateServiceImpl implements RateService {
                 .bodyToMono(JsonNode.class)
                 .map(json -> {
                     logger.debug("Received response: {}", json);
-                    // Validate response
+
                     if ("error".equals(json.path("result").asText())) {
                         throw new ExchangeRateException(
                                 json.path("error-type").asText("API request failed")
@@ -77,32 +76,51 @@ public class RateServiceImpl implements RateService {
                         );
                     }
 
-                    // Extract rates
-                    ObjectNode ratesNode = objectMapper.createObjectNode();
+                    double rate = json.get("conversion_rates").get(normalizedTo).asDouble();
+                    String lastUpdated = json.path("time_last_update_utc").asText();
 
-                    logger.info("Exchange rate from {} to {}: {}",
-                            normalizedFrom, normalizedTo,
-                            json.get("conversion_rates").get(normalizedTo).asDouble());
-                    System.out.println("Exchange rate from " + normalizedFrom + " to " + normalizedTo + ": " +
-                            json.get("conversion_rates").get(normalizedTo).asDouble());
-                    ratesNode.put("base", normalizedFrom);
-                    ratesNode.put("target", normalizedTo);
-                    ratesNode.put("rate", json.get("conversion_rates").get(normalizedTo).asDouble());
-                    ratesNode.put("last_updated", json.get("time_last_update_utc").asText());
-                    ratesNode.set("full_response", json);
+                    logger.info("Exchange rate from {} to {}: {}", normalizedFrom, normalizedTo, rate);
 
-                    return ratesNode;
+                    String jsonString = String.format(
+                            "{" +
+                                    "\"base\":\"%s\"," +
+                                    "\"target\":\"%s\"," +
+                                    "\"rate\":%f," +
+                                    "\"last_updated\":\"%s\"," +
+                                    "\"full_response\":%s" +
+                                    "}",
+                            normalizedFrom,
+                            normalizedTo,
+                            rate,
+                            lastUpdated,
+                            json.toString()
+                    );
+
+                    try {
+                        return new ObjectMapper().readTree(jsonString);
+                    } catch (Exception e) {
+                        throw new ExchangeRateException("Failed to parse constructed JSON: " + e.getMessage());
+                    }
                 })
                 .onErrorResume(e -> {
                     logger.error("Failed to fetch exchange rate", e);
 
-                    ObjectNode errorResponse = objectMapper.createObjectNode();
-                    errorResponse.put("error", e.getMessage());
-                    errorResponse.put("from", normalizedFrom);
-                    errorResponse.put("to", normalizedTo);
-                    errorResponse.put("rate", 0.0);
-                    errorResponse.put("last_updated", "");
-                    return Mono.just( errorResponse);
+                    String fallbackJson = String.format(
+                            "{" +
+                                    "\"error\":\"%s\"," +
+                                    "\"from\":\"%s\"," +
+                                    "\"to\":\"%s\"," +
+                                    "\"rate\":0.0," +
+                                    "\"last_updated\":\"\"" +
+                                    "}", e.getMessage(), normalizedFrom, normalizedTo);
+
+                    try {
+                        return Mono.just(new ObjectMapper().readTree(fallbackJson));
+                    } catch (Exception ex) {
+                        logger.error("Failed to create fallback JSON", ex);
+                        return Mono.error(new RuntimeException("Failed to create fallback error JSON"));
+                    }
                 });
     }
+
 }
