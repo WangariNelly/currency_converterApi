@@ -25,6 +25,7 @@ public class RateController {
     this.rateServiceImpl = rateServiceImpl;
   }
 
+  // calls external api to get conversion rates
   @GetMapping("/convert")
   public Mono<JsonNode> convertCurrency(
           @RequestParam String from,
@@ -45,6 +46,7 @@ public class RateController {
     return Mono.just(error);
   }
 
+  //Checks status of the app
   @GetMapping("/status")
   public ResponseEntity<Map<String, String>> status() {
     return ResponseEntity.ok(Map.of("status", "UP"));

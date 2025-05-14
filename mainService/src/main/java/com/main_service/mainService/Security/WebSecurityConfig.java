@@ -28,7 +28,6 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
       http
-//              .addFilterBefore(rateLimitFilter,ApiKeyFilter.class)
               .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers( "/**","api/v1/status", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
@@ -37,7 +36,8 @@ public class WebSecurityConfig {
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(apiKeyFilter, BasicAuthenticationFilter.class);
+              .addFilterBefore(rateLimitFilter, BasicAuthenticationFilter.class)
+              .addFilterBefore(apiKeyFilter, BasicAuthenticationFilter.class);
         return http.build();
     }
 }
