@@ -3,6 +3,7 @@ package com.main_service.mainService.Services;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.main_service.mainService.Interfaces.ConversionService;
+import com.main_service.mainService.Models.Conversion;
 import com.main_service.mainService.Repos.ConversionRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -107,20 +109,36 @@ public class ConversionServiceImpl implements ConversionService {
 
                     logger.info("Exchange rate from {} to {}: {}", normalizedFrom, normalizedTo, rate);
                     logger.info("Converted amount: {}", convertedAmount);
+
+                    //Prepare conversion object for db save
+                    Conversion conversion = new Conversion(
+                            normalizedFrom,
+                            normalizedTo,
+                            BigDecimal.valueOf(amount),
+                            rate,
+                            convertedAmount,
+                            LocalDateTime.now()
+                    );
+
+                    conversionRepository.save(conversion);
+                    logger.info("Saved To db...");
+                    System.out.println("Loaded to Db");
+
                     String jsonString = String.format(
                             "{" +
                                     "\"base\":\"%s\"," +
                                     "\"target\":\"%s\"," +
                                     "\"rate\":%.4f," +
-                                    "\"last_updated\":\"%s\"," +
-                                    "\"full_response\":%s" +
+                                    "\"amount\":%.2f," +
+                                    "\"last_updated\":\"%s\"" +
                                     "}",
                             normalizedFrom,
                             normalizedTo,
                             rate,
-                            lastUpdated,
-                            json.toString()
+                            amount,
+                            lastUpdated
                     );
+
                     logger.debug("Constructed JSON: {}", jsonString);
 
                     try {
