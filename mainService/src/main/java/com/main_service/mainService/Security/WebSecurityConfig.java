@@ -31,7 +31,7 @@ public class WebSecurityConfig {
 //              .addFilterBefore(rateLimitFilter,ApiKeyFilter.class)
               .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "/**","api/v1/status","api/v1/convert", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers( "/**","api/v1/status", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
                         .anyRequest().authenticated()
                 )
