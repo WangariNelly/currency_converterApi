@@ -21,6 +21,8 @@ import java.util.Map;
 @RequestMapping("/api/v1")
 public class ConversionController {
 
+
+
     private final ConversionServiceImpl conversionServiceIm;
     public ConversionController(ConversionServiceImpl conversionServiceIm) {
         this.conversionServiceIm = conversionServiceIm;
@@ -54,6 +56,9 @@ public class ConversionController {
 
     @PostMapping("/convert")
     public Mono<JsonNode> convert(@RequestBody JsonNode requestBody) {
+        if (requestBody == null || !requestBody.has("from") || !requestBody.has("to") || !requestBody.has("amount")) {
+            return Mono.just(createErrorResponse("Invalid request body"));
+        }
         String from = requestBody.path("from").asText();
         String to = requestBody.path("to").asText();
         double amount = requestBody.path("amount").asDouble();
