@@ -28,16 +28,16 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
       http
-//              .addFilterBefore(rateLimitFilter,ApiKeyFilter.class)
               .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "/**","api/v1/status","api/v1/convert", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers( "/**","api/v1/status", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(apiKeyFilter, BasicAuthenticationFilter.class);
+              .addFilterBefore(rateLimitFilter, BasicAuthenticationFilter.class)
+              .addFilterBefore(apiKeyFilter, BasicAuthenticationFilter.class);
         return http.build();
     }
 }

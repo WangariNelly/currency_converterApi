@@ -21,39 +21,19 @@ import java.util.Map;
 @RequestMapping("/api/v1")
 public class ConversionController {
 
+
+
     private final ConversionServiceImpl conversionServiceIm;
     public ConversionController(ConversionServiceImpl conversionServiceIm) {
         this.conversionServiceIm = conversionServiceIm;
     }
-//    @PostMapping("/convert")
-//    public Mono<JsonNode> convert(@RequestBody JsonNode requestBody) {
-//        String from = requestBody.path("from").asText();
-//        String to = requestBody.path("to").asText();
-//        double amount = requestBody.path("amount").asDouble();
-//
-//        if (isValidCurrencyCode(from) && isValidCurrencyCode(to)) {
-//            return conversionServiceIm.convertCurrency(from.toUpperCase(), to.toUpperCase(),amount);
-//        }
-//
-//
-//        ObjectNode error = JsonNodeFactory.instance.objectNode();
-//        error.put("error", "Invalid currency code(s)");
-//        error.put("from", from);
-//        error.put("to", to);
-//        error.put("rate", 0.0);
-//        error.put("amount", amount);
-//        error.put("converted_amount", 0.0);
-//        error.put("last_updated", "");
-//        return Mono.just(error);
-//
-//    }
-//
-//    private JsonNode createErrorResponse(String message) {
-//        return JsonNodeFactory.instance.objectNode().put("error", message);
-//    }
 
+    // Conversion endpoints
     @PostMapping("/convert")
     public Mono<JsonNode> convert(@RequestBody JsonNode requestBody) {
+        if (requestBody == null || !requestBody.has("from") || !requestBody.has("to") || !requestBody.has("amount")) {
+            return Mono.just(createErrorResponse("Invalid request body"));
+        }
         String from = requestBody.path("from").asText();
         String to = requestBody.path("to").asText();
         double amount = requestBody.path("amount").asDouble();
@@ -77,6 +57,8 @@ public class ConversionController {
     private JsonNode createErrorResponse(String message) {
         return JsonNodeFactory.instance.objectNode().put("error", message);
     }
+
+    //Checks status of the application
 
     @GetMapping("/status")
     public ResponseEntity<Map<String, String>> status() {
