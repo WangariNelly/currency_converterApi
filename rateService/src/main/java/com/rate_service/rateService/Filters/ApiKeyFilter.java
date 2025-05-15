@@ -43,6 +43,7 @@ public class ApiKeyFilter extends OncePerRequestFilter {
         }
 
         String apiKey = request.getHeader(API_KEY_HEADER);
+        System.out.println(apiKey);
 
         if (apiKey == null || apiKey.isBlank()) {
             logger.warn("Missing API key for request to {}", requestUri);
@@ -61,9 +62,10 @@ public class ApiKeyFilter extends OncePerRequestFilter {
     }
 
     private boolean isPublicEndpoint(String requestUri) {
-        return requestUri.startsWith("/actuator") ||
-                requestUri.startsWith("/api/v1/status") ||
+        return requestUri.startsWith("/actuator/health") ||
+                requestUri.startsWith("/api/v1/rate/status") ||
                 requestUri.startsWith("/v3/api-docs") ||
-                requestUri.startsWith("/swagger-ui");
+                requestUri.startsWith("/swagger-ui") ||
+                requestUri.startsWith("/swagger-resources");
     }
 }
