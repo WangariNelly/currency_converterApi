@@ -1,0 +1,377 @@
+{
+	"info": {
+		"_postman_id": "3439e5a6-001b-44df-a2f9-2c1336c9cb1c",
+		"name": "CurrencyConverter-Anvil Shield Group",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "34711901"
+	},
+	"item": [
+		{
+			"name": "Get main-service status",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-API-KEY",
+						"value": "SJDLKSKHJGFYAY76QO99912IAJilkkyfrtyy&&&&&vfklddlkhsghhj",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "X-API-SECRET",
+						"value": "345678jvfdfkjknbfgui6890khjgfdddsfvnnmlkjhjgf",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8081/api/v1/rate/status",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"rate",
+						"status"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Get rate-service status",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-API-KEY",
+								"value": "SJDLKSKHJGFYAY76QO99912IAJilkkyfrtyy&&&&&vfklddlkhsghhj",
+								"type": "text"
+							},
+							{
+								"key": "X-API-SECRET",
+								"value": "345678jvfdfkjknbfgui6890khjgfdddsfvnnmlkjhjgf",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/rate/status",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"rate",
+								"status"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "0"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 10 May 2025 18:31:21 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": \"UP\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Get Conversion rates from external ",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-API-KEY",
+						"value": "SJDLKSKHJGFYAY76QO99912IAJilkkyfrtyy&&&&&vfklddlkhsghhj",
+						"type": "text"
+					},
+					{
+						"key": "X-API-SECRET",
+						"value": "345678jvfdfkjknbfgui6890khjgfdddsfvnnmlkjhjgf",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/v1/rate/convert?from=USD&to=BGN",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"rate",
+						"convert"
+					],
+					"query": [
+						{
+							"key": "from",
+							"value": "USD"
+						},
+						{
+							"key": "X-API-KEY",
+							"value": "SJDLKSKHJGFYAY76QO99912IAJilkkyfrtyy%26%26%26%26%26vfklddlkhsghhj",
+							"disabled": true
+						},
+						{
+							"key": "X-API-SECRET",
+							"value": "345678jvfdfkjknbfgui6890khjgfdddsfvnnmlkjhjgf",
+							"disabled": true
+						},
+						{
+							"key": "to",
+							"value": "BGN"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get main-service status",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-API-KEY",
+						"value": "SJDLKSKHJGFYAY76QO99912IAJilkkyfrtyy&&&&&vfklddlkhsghhj",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "X-API-SECRET",
+						"value": "345678jvfdfkjknbfgui6890khjgfdddsfvnnmlkjhjgf",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/status",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"status"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Get rate-service status",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-API-KEY",
+								"value": "SJDLKSKHJGFYAY76QO99912IAJilkkyfrtyy&&&&&vfklddlkhsghhj",
+								"type": "text"
+							},
+							{
+								"key": "X-API-SECRET",
+								"value": "345678jvfdfkjknbfgui6890khjgfdddsfvnnmlkjhjgf",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/rate/status",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"rate",
+								"status"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "X-XSS-Protection",
+							"value": "0"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, no-store, max-age=0, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Expires",
+							"value": "0"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 10 May 2025 18:31:21 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": \"UP\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Convert Rate/Persist To DB",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-API-KEY",
+						"value": "SJDLKSKHJGFYAY76QO99912IAJilkkyfrtyy&&&&&vfklddlkhsghhj",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"from\": \"USD\",\r\n    \"to\": \"KES\",\r\n    \"amount\": 900\r\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/convert",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"convert"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

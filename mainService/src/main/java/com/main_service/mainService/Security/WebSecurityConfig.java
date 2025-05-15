@@ -30,7 +30,7 @@ public class WebSecurityConfig {
       http
               .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "/**","api/v1/status", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers( "/**","api/v1/status", "/swagger-ui/**", "/v3/api-docs/**","/actuator/health").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
                         .anyRequest().authenticated()
                 )

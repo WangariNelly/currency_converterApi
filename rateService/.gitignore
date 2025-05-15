@@ -32,4 +32,10 @@ build/
 ### VS Code ###
 .vscode/
 
+currency-converter\rateService\src\main\resources\application.properties
+currency-converter\rateService\src\main\resources\application.yml
+
+src/rate/resources/application.properties
+
+
 
