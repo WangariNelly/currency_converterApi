@@ -62,31 +62,6 @@ public class ConversionServiceImpl implements ConversionService {
                         throw new RuntimeException(json.path("error-type").asText("API request failed"));
                     }
 
-//                    if (json == null || !json.has("rate")) {
-//                        throw new RuntimeException("Missing conversion_rate in response");
-//                    }
-
-
-//                    BigDecimal rate = new BigDecimal(json.get("conversion_rates").get(normalizedTo).asText());
-//                    BigDecimal amountBD = BigDecimal.valueOf(amount);
-//                    BigDecimal convertedAmount = rate.multiply(amountBD);
-//                    String lastUpdated = json.path("time_last_update_utc").asText();
-
-//                    BigDecimal rate ;
-//                    // Try both possible formats
-//                    if (json.has("conversion_rates") && json.get("conversion_rates").has(normalizedTo)) {
-//                        rate = new BigDecimal(json.get("conversion_rates").get(normalizedTo).asText());
-//                    } else if (json.has("conversion_rate")) {
-//                        rate = new BigDecimal(json.get("conversion_rate").asText());
-//                    } else {
-//                        throw new RuntimeException("Missing conversion_rate in response");
-//                    }
-//
-//                    BigDecimal convertedAmount = rate.multiply(BigDecimal.valueOf(amount));
-//                    String lastUpdated = json.path("time_last_update_utc").asText();
-//
-//                    logger.info("Exchange rate from {} to {}: {}", normalizedFrom, normalizedTo, rate);
-//                    logger.info("Converted amount: {}", convertedAmount);
 
                     BigDecimal rate;
 // Try both possible formats
