@@ -40,7 +40,6 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(apiKeyFilter, BasicAuthenticationFilter.class);
-//                 .headers(headers -> headers.contentSecurityPolicy("default-src 'self'").and().frameOptions().sameOrigin());
         return http.build();
     }
 

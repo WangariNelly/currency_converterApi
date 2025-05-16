@@ -3,9 +3,9 @@ services:
   postgres:
     image: postgres:15
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Ak0881216
-      POSTGRES_DB: mydb
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5433:5432"
     volumes:
@@ -20,23 +20,23 @@ services:
   rate-service:
       build: ./rateService
       ports:
-          - "8081:8081"
+          - ${RATE_PORT}:${RATE_PORT}
       environment:
             SPRING_APPLICATION_NAME: rate-service
-            SERVER_PORT: 8081
+            SERVER_PORT: ${RATE_PORT}
 
             # Database
-            SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mydb
-            SPRING_DATASOURCE_USERNAME: postgres
-            SPRING_DATASOURCE_PASSWORD: Ak0881216
+            SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+            SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+            SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
 
             # ExchangeRate API config
             EXCHANGE_API_BASE_URL: https://v6.exchangerate-api.com/v6
-            EXCHANGE_API_KEY: 16605934b7f78ad965711131
+            EXCHANGE_API_KEY: ${EXCHANGE_API_KEY}
 
             # Security config
-            SECURITY_API_KEY: SJDLKSKHJGFYAY76QO99912IAJilkkyfrtyy&&&&&vfklddlkhsghhj
-            SECURITY_API_SECRET: 345678jvfdfkjknbfgui6890khjgfdddsfvnnmlkjhjgf
+            SECURITY_API_KEY: ${SECURITY_API_KEY}
+            SECURITY_API_SECRET: ${SECURITY_API_SECRET}
             SECURITY_API_ENABLED: true
 
             # Logging
@@ -50,7 +50,7 @@ services:
             CORS_ALLOWED_HEADERS: "*"
 
             # API Key settings
-            API_KEY_HEADER: X-API-KEY
+            API_KEY_HEADER: ${API_KEY_HEADER}
             API_KEY_CACHE_ENABLED: true
             API_KEY_CACHE_DURATION: 5m
 
@@ -70,22 +70,22 @@ services:
   main-service:
     build: ./mainService
     ports:
-      - "8080:8080"
+      - 8080:8080
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      SERVER_PORT: 8080
+      SERVER_PORT: ${MAIN_PORT}
       SPRING_APPLICATION_NAME: mainService
 
 
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/mydb
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: Ak0881216
-      RATE_SERVICE_URL: http://rate-service:8081/api/v1/rate
-      SECURITY_API_KEY: SJDLKSKHJGFYAY76QO99912IAJilkkyfrtyy&&&&&vfklddlkhsghhj
-      SECURITY_API_SECRET: 345678jvfdfkjknbfgui6890khjgfdddsfvnnmlkjhjgf
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      RATE_SERVICE_URL: ${RATE_SERVICE_URL}
+      SECURITY_API_KEY: ${SECURITY_API_KEY}
+      SECURITY_API_SECRET: ${SECURITY_API_SECRET}
       SECURITY_API_ENABLED: true
-      APP_API_KEY: SJDLKSKHJGFYAY76QO99912IAJilkkyfrtyy&&&&&vfklddlkhsghhj
-      APP_API_SECRET: 345678jvfdfkjknbfgui6890khjgfdddsfvnnmlkjhjgf
+      APP_API_KEY: ${APP_API_KEY}
+      APP_API_SECRET: ${APP_API_SECRET}
 
 
     #      # Logging
@@ -98,7 +98,7 @@ services:
       CORS_ALLOWED_HEADERS: "*"
 
 
-      API_KEY_HEADER: X-API-KEY
+      API_KEY_HEADER: ${API_KEY_HEADER}
       API_KEY_CACHE_ENABLED: true
       API_KEY_CACHE_DURATION: 5m
 
